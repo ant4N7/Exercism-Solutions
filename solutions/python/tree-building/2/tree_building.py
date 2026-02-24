@@ -1,0 +1,33 @@
+class Record:
+    def __init__(self, record_id, parent_id):
+        self.record_id = record_id
+        self.parent_id = parent_id
+
+
+class Node:
+    def __init__(self, node_id):
+        self.node_id = node_id
+        self.children = []
+
+
+def BuildTree(records):
+    if not records: return None
+        
+    records.sort(key=lambda x: x.record_id)
+    record_ids = [i.record_id for i in records]
+    nodes = {record.record_id: Node(record.record_id) for record in records}
+    
+    if record_ids[-1] != len(record_ids) - 1 or record_ids[0] != 0:
+        raise ValueError('Record id is invalid or out of order.')
+    for record in records:
+        if record.record_id < record.parent_id:
+            raise ValueError('Node parent_id should be smaller than it\'s record_id.')
+        if record.record_id == record.parent_id and record.record_id != 0:
+            raise ValueError('Only root should have equal record and parent id.')
+        if record.record_id == record.parent_id:
+            root = nodes[record.record_id]
+        else:
+            parent_node = nodes.get(record.parent_id)
+            parent_node.children.append(nodes[record.record_id])
+
+    return root
